@@ -1,0 +1,83 @@
+---
+title: "**Innovative Optics Spec Sheet**"
+date: "Updated `r format(Sys.time(), '%B %d, %Y')`"
+output: pdf_document
+mainfont: Ascii
+geometry: margin=0.2in
+classoption: 12pt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+
+
+```{r, echo=F}
+data_specs <- readxl::read_excel("C:/Users/johnl/OneDrive/Desktop/Regulatory/Master/Technical_Information.xlsx") %>% 
+  filter(Product == "Pi11")
+
+product <- str_c("LightScalpel.8X3.", data_specs$Product)
+
+specs_tibble <- data_specs %>% 
+  select(`OD Specs`) %>% 
+  mutate_all(linebreak)
+
+specs_tibble <- tibble(specs_tibble,
+  "Include" = str_c(product, ' and ', "Lot: "),
+  "VLT (percent)" = scales::percent(as.numeric(data_specs$`VLT`)))
+ 
+```
+
+# **`r product`**
+
+```{r, echo=F}
+kable(specs_tibble,
+      format = 'latex',
+      escape = FALSE,
+      align = 'c',
+      booktabs=T)%>% 
+  kable_styling(latex_options = c("hold_position"))%>%
+  sub("\\\\toprule", "", .) %>%
+  sub("\\\\bottomrule", "", .) %>% 
+  row_spec(0, bold = T)
+```
+
+
+```{r, echo = F, fig.align='center', out.height='20%'}
+#knitr::include_graphics('images/701FrameCAD.jpg')
+```
+
+
+### BOM
+
+```{r, echo = F}
+bom <- tibble(product,
+              "Pi11 DFU",
+              "Black, adjustable head strap",
+              "Cloth bag")
+
+kable(bom,
+      format = 'latex',
+      escape = FALSE,
+      align = 'l',
+      booktabs=T, 
+      col.names = NULL)%>% 
+  kable_styling(latex_options = c("hold_position", "scale_down"))%>%
+  sub("\\\\toprule", "", .) %>%
+  sub("\\\\bottomrule", "", .)
+```
+
+### Label - goes on the outside of the bag
+
+```{r, echo = F, fig.align='center', out.height= '25%'}
+knitr::include_graphics('images/Lightscalpel.8X3.Pi11.jpg')
+```
+
+
+```{r, echo = F, fig.align='right', out.height='5%'}
+knitr::include_graphics('IOLogo.png')
+```
